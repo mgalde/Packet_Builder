@@ -11,7 +11,7 @@ level = 0
 code = 0
 identify = 0
 sequence = 0
-address = '192.168.86.1'
+address = '192.168.1.1'
 
 def checksum(source_string):
     countTo = (int(len(source_string)/2))*2
@@ -60,8 +60,22 @@ sendme = struct.pack(">BBHHH", level, code, chksum, identify, sequence)
 
 
 print ("In Progress")
-for i in range(3):
+for i in range(300):
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+
+    icmp = struct.pack(">BBHHH", level, code, 0, identify, sequence)
+    chksum=checksum (icmp)
+
+    sendme = struct.pack(">BBHHH", level, code, chksum, identify, sequence)
     s.sendto(sendme, (address, 0))
+    code = code + 1
+    if code > 6:
+        code = 0
+        level = level + 1
+    if level > 20:
+        level = 0
+    sequence = sequence + 11
+    identify = identify + 13
 
 
     time.sleep(.5)
