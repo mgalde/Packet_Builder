@@ -7,10 +7,11 @@ import time
 import select
 import binascii
 
-level = 3
-code = 3
-identify = 1
-sequence = 111
+level = 0
+code = 0
+identify = 0
+sequence = 0
+address = '192.168.86.1'
 
 def checksum(source_string):
     countTo = (int(len(source_string)/2))*2
@@ -32,16 +33,16 @@ def checksum(source_string):
             sum = sum + (ord(hiByte) * 256 + ord(loByte))
         count += 2
 
-    
+
     if countTo < len(source_string): # Check for odd length
         loByte = source_string[len(source_string)-1]
         sum += loByte
 
-    sum &= 0xffffffff 
+    sum &= 0xffffffff
 
-    sum = (sum >> 16) + (sum & 0xffff)    
-    sum += (sum >> 16)                    
-    answer = ~sum & 0xffff                
+    sum = (sum >> 16) + (sum & 0xffff)
+    sum += (sum >> 16)
+    answer = ~sum & 0xffff
     answer = htons(answer)
 
     return answer
@@ -55,7 +56,14 @@ chksum=checksum (icmp)
 
 sendme = struct.pack(">BBHHH", level, code, chksum, identify, sequence)
 
-s.sendto(sendme, ('192.168.86.1', 0))
 
+
+
+print ("In Progress")
+for i in range(3):
+    s.sendto(sendme, (address, 0))
+
+
+    time.sleep(.5)
 
 print ("Complete")
